@@ -1,3 +1,6 @@
+lib/generated/
 node_modules/
 dist/
+build/
 .DS_Store
+.pnpm-store/

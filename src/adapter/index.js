@@ -1,3 +1,12 @@
+import { registerSW } from 'virtual:pwa-register';
+
+registerSW({
+  immediate: true,
+  onRegisterError(error) {
+    console.warn('[offline.cdn]', error);
+  }
+});
+
 (function () {
   'use strict';
 

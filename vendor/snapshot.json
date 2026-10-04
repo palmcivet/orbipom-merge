@@ -234,12 +234,6 @@
       "sha256": "dd7cb294fb73c30bb97e11dcf991dad845ae2e20c7596020a4dc19ab1bfe342f"
     },
     {
-      "path": "original/shared/eventLog_4_2_0.js",
-      "sourceUrl": "https://web.hycdn.cn/webview/static/scripts/eventLog_4_2_0.js",
-      "bytes": 107626,
-      "sha256": "11a92b8536aaef78893560c84d36021ce6f4fecb3a8727f6032436ebde3de954"
-    },
-    {
       "path": "original/shared/HarmonyOS_Sans_Bold.ttf",
       "sourceUrl": "https://web.hycdn.cn/webview/static/fonts/HarmonyOS_Sans_Bold.ttf",
       "bytes": 145860,
@@ -457,13 +451,13 @@
     },
     {
       "path": "original/shared/react-dom@18.3.1.js",
-      "sourceUrl": "https://web.hycdn.cn/static/js/umd/react-dom/react-dom@18.3.1.js",
+      "sourceUrl": "https://web.hycdn.cn/webview/static/fonts/react-dom@18.3.1.js",
       "bytes": 131835,
       "sha256": "35f4f974f4b2bcd44da73963347f8952e341f83909e4498227d4e26b98f66f0d"
     },
     {
       "path": "original/shared/react@18.3.1.js",
-      "sourceUrl": "https://web.hycdn.cn/static/js/umd/react/react@18.3.1.js",
+      "sourceUrl": "https://web.hycdn.cn/webview/static/fonts/react@18.3.1.js",
       "bytes": 10751,
       "sha256": "d949f1c3687aedadcedac85261865f29b17cd273997e7f6b2bfc53b2f9d4c4dd"
     },
