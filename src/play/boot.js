@@ -6,8 +6,8 @@ const status = document.querySelector('#status');
 registerSW({
   immediate: true,
   onRegisterError(error) {
-    console.warn('[offline.cdn]', error);
-    if (status) status.textContent = '官方资源不可用，改用本站备份。';
+    console.warn('[offline.sw]', error);
+    if (status) status.textContent = '页面缓存没有就绪，正在进入游戏。';
   }
 });
 

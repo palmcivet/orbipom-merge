@@ -2,8 +2,8 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { VitePWA } from 'vite-plugin-pwa';
 import { defineConfig } from 'vite';
-import { orbipom } from './lib/vite-plugin.mjs';
-import { viteBase } from './lib/site.mjs';
+import { viteBase } from './lib/config.mjs';
+import { orbipom } from './lib/vite-plugin/index.mjs';
 
 const root = path.dirname(fileURLToPath(import.meta.url));
 const basePath = process.env.ORBIPOM_BASE_PATH ?? '/';
@@ -68,8 +68,7 @@ export default defineConfig({
           'index.html',
           'play/index.html',
           'play/game.html',
-          'adapter/no-telemetry.js',
-          'assets/manifest.webmanifest',
+          'offline/no-telemetry.js',
           'assets/*.{js,css,ico,png}'
         ],
         globIgnores: ['**/site/**', '**/vendor/**', '**/shared/**']
@@ -79,6 +78,6 @@ export default defineConfig({
         type: 'module'
       }
     }),
-    orbipom({ basePath })
+    ...orbipom({ basePath })
   ]
 });

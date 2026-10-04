@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "fetch": "node lib/fetch.mjs",
+    "fetch": "node lib/snapshot/cli.mjs",
     "preview": "vite preview"
   },
   "devDependencies": {
