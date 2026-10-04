@@ -9,7 +9,7 @@ importers:
   .:
     devDependencies:
       serve:
-        specifier: ^14.2.5
+        specifier: ^14.2.6
         version: 14.2.6
 
 packages:

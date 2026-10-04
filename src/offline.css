@@ -46,6 +46,16 @@
   gap: 10px;
 }
 
+.offline-home .notice-link {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  color: #176c51;
+  font: inherit;
+  text-decoration: underline;
+}
+
 .offline-actions button,
 .offline-home a {
   padding: 10px 16px;

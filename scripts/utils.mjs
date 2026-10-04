@@ -2,7 +2,9 @@ const ORIGINAL_ASSET_BASE = 'https://web.hycdn.cn/endfield/webview/unn3irGqmsvya
 export const ORIGINAL_RELEASE = 'v1d5-synthesize-tuantuan-web@1.1.2';
 const SDK_ENTRY_URL = 'https://web.hycdn.cn/hg_web_sdk/lib/sdk.entry.js';
 const SDK_PUBLIC_PATH = 'https://web.hycdn.cn/hg_web_sdk/lib/3.0.3/';
-const CONTENT_SECURITY_POLICY = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'none'; form-action 'none'";
+const REACT_URL = 'https://cdn.jsdelivr.net/npm/react@18.3.1/umd/react.production.min.js';
+const REACT_DOM_URL = 'https://cdn.jsdelivr.net/npm/react-dom@18.3.1/umd/react-dom.production.min.js';
+const CONTENT_SECURITY_POLICY = "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'none'; form-action 'none'";
 
 export function normalizeBase(basePath) {
   if (basePath == null) {
@@ -29,8 +31,8 @@ function createReplacements(basePath) {
   const local = suffix => siteUrl(basePath, suffix);
   return [
     [ORIGINAL_ASSET_BASE, local('/site/')],
-    ['https://web.hycdn.cn/static/js/umd/react-dom/', local('/shared/')],
-    ['https://web.hycdn.cn/static/js/umd/react/', local('/shared/')],
+    ['https://web.hycdn.cn/static/js/umd/react-dom/react-dom@18.3.1.js', REACT_DOM_URL],
+    ['https://web.hycdn.cn/static/js/umd/react/react@18.3.1.js', REACT_URL],
     ['https://web.hycdn.cn/webview/static/fonts/', local('/shared/')],
     ['https://web-static.hg-cdn.com/webview/static/fonts/', local('/shared/')],
     ['https://web.hycdn.cn/webview/static/scripts/eventLog_4_2_0.js', local('/offline/no-telemetry.js')],

@@ -39,7 +39,7 @@ pnpm preview
 
 `vendor/original/` 是原版发布包。`vendor/hg-web-sdk/3.0.3/` 是锁定的 Web SDK，入口 `vendor/hg-web-sdk/sdk.entry.js` 只加载这一版，不请求灰度配置，也不加缓存破坏参数。登录、遥测和奖励接口保持禁用。
 
-更新快照时运行 `pnpm update`，核对 `vendor/snapshot.json` 后再提交。日常构建如果哈希对不上会直接失败。
+更新快照时运行 `pnpm fetch`，核对 `vendor/snapshot.json` 后再提交。日常构建如果哈希对不上会直接失败。
 
 ## 操作
 

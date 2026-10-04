@@ -5,11 +5,11 @@
   "type": "module",
   "scripts": {
     "build": "node scripts/build.mjs",
-    "update": "node scripts/fetch.mjs",
-    "preview": "serve dist --listen 4173",
+    "fetch": "node scripts/fetch.mjs",
+    "preview": "serve dist --listen 4173"
   },
   "devDependencies": {
-    "serve": "^14.2.5"
+    "serve": "^14.2.6"
   },
   "engines": {
     "node": ">=18"
