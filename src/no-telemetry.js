@@ -1,0 +1,1 @@
+window.OrbipomOfflineTelemetryDisabled = true;
