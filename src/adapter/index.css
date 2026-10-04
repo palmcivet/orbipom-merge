@@ -46,18 +46,7 @@
   gap: 10px;
 }
 
-.offline-home .notice-link {
-  padding: 0;
-  border: 0;
-  border-radius: 0;
-  background: none;
-  color: #176c51;
-  font: inherit;
-  text-decoration: underline;
-}
-
-.offline-actions button,
-.offline-home a {
+.offline-actions button {
   padding: 10px 16px;
   border: 2px solid #fff;
   border-radius: 5px;
@@ -68,29 +57,8 @@
   text-decoration: none;
 }
 
-.offline-home {
-  min-height: 100vh;
-  margin: 0;
-  display: grid;
-  place-items: center;
-  background: radial-gradient(ellipse at 50% 20%, #57c5a6, #c2f0dc);
-  color: #123c30;
-  font: 18px/1.8 system-ui, sans-serif;
-}
-
-.offline-home main {
-  width: min(600px, 88vw);
-  padding: 28px;
-  border: 4px solid white;
-  background: #ffffffbf;
-  text-align: center;
-}
-
-.offline-home img {
-  max-width: 85%;
-  height: 150px;
-}
-
-.offline-home h1 {
-  font-size: 30px;
+html.offline-play,
+html.offline-play body,
+html.offline-play #root {
+  background-color: #83ccb7;
 }

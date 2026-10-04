@@ -1,15 +1,22 @@
 (function () {
   'use strict';
 
-  const storageKey = 'orbipom.offline.profile.v1';
+  const STORAGE_KEY = 'orbipom.offline.profile.v1';
+  const SCORE_LIMIT = 99999;
+  const NICKNAME_LIMIT = 24;
+  const UNLOCK_MIN = 5;
+  const UNLOCK_MAX = 11;
+  const HISTORY_LIMIT = 100;
+  const HISTORY_PREVIEW = 10;
+  const SAVE_FILE_LIMIT = 1000000;
+  const SAVE_INTERVAL_MS = 300;
+  const CLAIMED_TASKS = new Set(['merge', 'skill', 'highScore', 'share', 'goldenAdmin']);
 
   function sitePath(pathname) {
-    const configured = typeof window.ORBIPOM_BASE === 'string' ? window.ORBIPOM_BASE : '';
-    const base = configured.replace(/\/$/, '');
+    const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     const suffix = pathname === '/' ? '/' : (pathname.startsWith('/') ? pathname : `/${pathname}`);
     return `${base}${suffix}`;
   }
-  const taskTargets = { merge: 20, skill: 3, highScore: 1500, share: 1, goldenAdmin: 1 };
   let stores = null;
   let storageAvailable = true;
   let lastSaveAt = 0;
@@ -21,7 +28,23 @@
   }
 
   function emptyProfile() {
-    return { schema: 1, nickname: '本地管理员', highScore: 0, submittedBest: 0, unlockedMax: 5, guideDone: false, mergeCountTotal: 0, skillUseTotal: 0, shared: false, claimed: [], history: [], updatedAt: null };
+    return { schema: 1, nickname: '本地管理员', highScore: 0, submittedBest: 0, unlockedMax: UNLOCK_MIN, guideDone: false, mergeCountTotal: 0, skillUseTotal: 0, shared: false, claimed: [], history: [], updatedAt: null };
+  }
+
+  function nicknameOf(value) {
+    return typeof value === 'string' && value.trim() ? value.trim().slice(0, NICKNAME_LIMIT) : '本地管理员';
+  }
+
+  function normalizeHistory(history) {
+    if (!Array.isArray(history)) {
+      return [];
+    }
+    return history.slice(-HISTORY_LIMIT).filter(record => record && Number.isFinite(record.score)).map(record => ({
+      score: boundedInteger(record.score, SCORE_LIMIT),
+      at: typeof record.at === 'string' ? record.at : '',
+      merges: boundedInteger(record.merges, Number.MAX_SAFE_INTEGER),
+      skills: boundedInteger(record.skills, Number.MAX_SAFE_INTEGER)
+    }));
   }
 
   function normalizeProfile(value) {
@@ -30,23 +53,23 @@
     }
     return {
       schema: 1,
-      nickname: typeof value.nickname === 'string' && value.nickname.trim() ? value.nickname.trim().slice(0, 24) : '本地管理员',
-      highScore: boundedInteger(value.highScore, 99999),
-      submittedBest: boundedInteger(value.submittedBest, 99999),
-      unlockedMax: Math.max(5, boundedInteger(value.unlockedMax, 11, 5)),
+      nickname: nicknameOf(value.nickname),
+      highScore: boundedInteger(value.highScore, SCORE_LIMIT),
+      submittedBest: boundedInteger(value.submittedBest, SCORE_LIMIT),
+      unlockedMax: Math.max(UNLOCK_MIN, boundedInteger(value.unlockedMax, UNLOCK_MAX, UNLOCK_MIN)),
       guideDone: value.guideDone === true,
       mergeCountTotal: boundedInteger(value.mergeCountTotal, Number.MAX_SAFE_INTEGER),
       skillUseTotal: boundedInteger(value.skillUseTotal, Number.MAX_SAFE_INTEGER),
       shared: value.shared === true,
-      claimed: Array.isArray(value.claimed) ? [...new Set(value.claimed.filter(taskId => Object.hasOwn(taskTargets, taskId)))] : [],
-      history: Array.isArray(value.history) ? value.history.slice(-100).filter(record => record && Number.isFinite(record.score)).map(record => ({ score: boundedInteger(record.score, 99999), at: typeof record.at === 'string' ? record.at : '', merges: boundedInteger(record.merges, Number.MAX_SAFE_INTEGER), skills: boundedInteger(record.skills, Number.MAX_SAFE_INTEGER) })) : [],
+      claimed: Array.isArray(value.claimed) ? [...new Set(value.claimed.filter(taskId => CLAIMED_TASKS.has(taskId)))] : [],
+      history: normalizeHistory(value.history),
       updatedAt: typeof value.updatedAt === 'string' ? value.updatedAt : null
     };
   }
 
   function readProfile() {
     try {
-      const saved = localStorage.getItem(storageKey);
+      const saved = localStorage.getItem(STORAGE_KEY);
       return saved ? normalizeProfile(JSON.parse(saved)) : emptyProfile();
     } catch (error) {
       storageAvailable = false;
@@ -62,7 +85,7 @@
     saveTimer = null;
     profile.updatedAt = new Date().toISOString();
     try {
-      localStorage.setItem(storageKey, JSON.stringify(profile));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(profile));
       storageAvailable = true;
     } catch (error) {
       storageAvailable = false;
@@ -72,32 +95,15 @@
   }
 
   function persist() {
-    if (Date.now() - lastSaveAt >= 300) {
+    if (Date.now() - lastSaveAt >= SAVE_INTERVAL_MS) {
       persistNow();
     } else if (!saveTimer) {
-      saveTimer = setTimeout(persistNow, 300);
+      saveTimer = setTimeout(persistNow, SAVE_INTERVAL_MS);
     }
   }
 
   function success(data) {
     return Promise.resolve({ code: 0, msg: 'success', data });
-  }
-
-  function rewardTasks() {
-    const progress = { merge: profile.mergeCountTotal, skill: profile.skillUseTotal, highScore: profile.highScore, share: Number(profile.shared), goldenAdmin: Number(profile.unlockedMax >= 11) };
-    return Object.entries(taskTargets).map(([taskId, target]) => ({ id: taskId, current: progress[taskId], target, status: profile.claimed.includes(taskId) ? 0 : null, claimable: progress[taskId] >= target && !profile.claimed.includes(taskId) }));
-  }
-
-  function claimTask(taskId) {
-    const task = rewardTasks().find(candidate => candidate.id === taskId);
-    if (!task || (!task.claimable && task.status === null)) {
-      return { code: -1, msg: '请先达成本地挑战条件', data: null };
-    }
-    if (!profile.claimed.includes(taskId)) {
-      profile.claimed.push(taskId);
-      persistNow();
-    }
-    return { code: 0, msg: 'success', data: { taskId, status: 0 } };
   }
 
   const api = {
@@ -113,19 +119,19 @@
         return success(null);
       },
       requestRecordMerge: level => {
-        profile.unlockedMax = Math.max(profile.unlockedMax, boundedInteger(level, 11));
+        profile.unlockedMax = Math.max(profile.unlockedMax, boundedInteger(level, UNLOCK_MAX));
         persist();
         return success({ mergeCountTotal: profile.mergeCountTotal, unlockedMax: profile.unlockedMax });
       },
       requestRecordSkill: () => success({ skillUseTotal: profile.skillUseTotal }),
       requestSubmitScore: ({ score }) => {
-        const normalizedScore = boundedInteger(score, 99999);
+        const normalizedScore = boundedInteger(score, SCORE_LIMIT);
         const isNewBest = normalizedScore > profile.submittedBest;
         profile.submittedBest = Math.max(profile.submittedBest, normalizedScore);
         profile.highScore = Math.max(profile.highScore, normalizedScore);
         const game = stores ? stores.game.getState() : null;
         profile.history.push({ score: normalizedScore, at: new Date().toISOString(), merges: game ? game.mergeCount : 0, skills: game ? game.skillUseCount : 0 });
-        profile.history = profile.history.slice(-100);
+        profile.history = profile.history.slice(-HISTORY_LIMIT);
         persistNow();
         return success({ best: profile.highScore, isNewBest });
       }
@@ -221,7 +227,71 @@
 
   function snapshot() {
     const game = stores ? stores.game.getState() : null;
-    return { release: 'v1d5-synthesize-tuantuan-web@1.1.2', storageAvailable, profile: JSON.parse(JSON.stringify(profile)), scene: stores ? stores.scene.getState().globalScene : null, game: game ? Object.fromEntries(Object.entries(game).filter(([, value]) => typeof value !== 'function')) : null };
+    const plainGame = game ? Object.fromEntries(Object.entries(game).filter(([, value]) => typeof value !== 'function')) : null;
+    return { release: 'v1d5-synthesize-tuantuan-web@1.1.2', storageAvailable, profile: structuredClone(profile), scene: stores ? stores.scene.getState().globalScene : null, game: plainGame };
+  }
+
+  function importSave() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json,application/json';
+    input.onchange = async () => {
+      try {
+        if (!input.files[0]) {
+          return;
+        }
+        if (input.files[0].size > SAVE_FILE_LIMIT) {
+          throw new Error('存档文件过大');
+        }
+        const imported = normalizeProfile(JSON.parse(await input.files[0].text()));
+        if (window.confirm('导入将替换当前本地记录并重新开始一局，继续吗？')) {
+          profile = imported;
+          persistNow();
+          window.location.reload();
+        }
+      } catch (error) {
+        window.alert(`导入失败：${error.message}`);
+      }
+    };
+    input.click();
+  }
+
+  function renamePlayer() {
+    const nickname = window.prompt(`本地排行榜昵称（最多 ${NICKNAME_LIMIT} 字）`, profile.nickname);
+    if (!nickname || !nickname.trim()) {
+      return;
+    }
+    profile.nickname = nickname.trim().slice(0, NICKNAME_LIMIT);
+    persistNow();
+    if (!stores) {
+      return;
+    }
+    const data = stores.data.getState();
+    data.setUserInfo({ ...data.userInfo, nickname: profile.nickname });
+  }
+
+  function restartPlay(message, reset) {
+    if (!window.confirm(message)) {
+      return;
+    }
+    reset();
+    persistNow();
+    window.location.assign(sitePath('/play/'));
+  }
+
+  function panelActions() {
+    return [
+      ['导出存档', exportSave],
+      ['导入存档', importSave],
+      ['修改昵称', renamePlayer],
+      ['重看新手引导', () => restartPlay('重看引导会开始新的一局，继续吗？', () => {
+        profile.guideDone = false;
+      })],
+      ['清空本地记录', () => restartPlay('清空所有本地分数、图鉴和对局记录？建议先导出备份。', () => {
+        profile = emptyProfile();
+      })],
+      ['继续游戏', closePanel]
+    ];
   }
 
   function closePanel() {
@@ -255,59 +325,7 @@
     status.textContent = `最高分 ${profile.highScore} · 累计合成 ${profile.mergeCountTotal} · 战技 ${profile.skillUseTotal} · 图鉴 ${profile.unlockedMax}/11${storageAvailable ? '' : ' · 存储不可用，请导出备份'}`;
     const actions = document.createElement('div');
     actions.className = 'offline-actions';
-    for (const [label, handler] of [
-      ['导出存档', exportSave],
-      ['导入存档', () => {
-        const input = document.createElement('input');
-        input.type = 'file';
-        input.accept = '.json,application/json';
-        input.onchange = async () => {
-          try {
-            if (!input.files[0]) {
-              return;
-            }
-            if (input.files[0].size > 1000000) {
-              throw new Error('存档文件过大');
-            }
-            const imported = normalizeProfile(JSON.parse(await input.files[0].text()));
-            if (window.confirm('导入将替换当前本地记录并重新开始一局，继续吗？')) {
-              profile = imported;
-              persistNow();
-              window.location.reload();
-            }
-          } catch (error) {
-            window.alert(`导入失败：${error.message}`);
-          }
-        };
-        input.click();
-      }],
-      ['修改昵称', () => {
-        const nickname = window.prompt('本地排行榜昵称（最多 24 字）', profile.nickname);
-        if (nickname && nickname.trim()) {
-          profile.nickname = nickname.trim().slice(0, 24);
-          persistNow();
-          if (stores) {
-            const data = stores.data.getState();
-            data.setUserInfo({ ...data.userInfo, nickname: profile.nickname });
-          }
-        }
-      }],
-      ['重看新手引导', () => {
-        if (window.confirm('重看引导会开始新的一局，继续吗？')) {
-          profile.guideDone = false;
-          persistNow();
-          window.location.assign(sitePath('/play/'));
-        }
-      }],
-      ['清空本地记录', () => {
-        if (window.confirm('清空所有本地分数、图鉴和对局记录？建议先导出备份。')) {
-          profile = emptyProfile();
-          persistNow();
-          window.location.assign(sitePath('/play/'));
-        }
-      }],
-      ['继续游戏', closePanel]
-    ]) {
+    for (const [label, handler] of panelActions()) {
       const button = document.createElement('button');
       button.type = 'button';
       button.textContent = label;
@@ -320,7 +338,7 @@
       const summary = document.createElement('summary');
       summary.textContent = '最近的本地结算';
       const list = document.createElement('ol');
-      for (const record of profile.history.slice(-10).reverse()) {
+      for (const record of profile.history.slice(-HISTORY_PREVIEW).reverse()) {
         const item = document.createElement('li');
         item.textContent = `${record.score} 分 · ${record.merges} 次合成 · ${record.skills} 次战技 · ${record.at.replace('T', ' ').slice(0, 19)}`;
         list.appendChild(item);

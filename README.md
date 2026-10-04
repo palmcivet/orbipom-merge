@@ -19,6 +19,12 @@
 
 ```bash
 pnpm install
+pnpm dev
+```
+
+开发时打开 `http://127.0.0.1:5173/`。要预览和 Pages 一样的构建结果：
+
+```bash
 pnpm build
 pnpm preview
 ```
@@ -27,11 +33,9 @@ pnpm preview
 
 `ORBIPOM_BASE_PATH` 默认为 `/`。部署到 `https://<user>.github.io/<repo>/` 时要设成 `/<repo>`，否则绝对路径会指到用户站点根目录。
 
-## GitHub Pages
+## 部署
 
-仓库 Settings → Pages → Build and deployment 选择 **GitHub Actions**。不要改成从分支部署：图片、音频和字体在 Git LFS 里，分支部署会把 LFS 指针原文发到网站上。
-
-推送到 `main` 后，[`.github/workflows/pages.yml`](.github/workflows/pages.yml) 会先用 `lfs: true` 检出真实文件，再用 Pages 的 `base_path` 构建 `dist/` 并发布。访问者拿到的是构建产物里的文件内容，不需要安装 Git LFS。构建只校验 `vendor/snapshot.json`，不会重新下载 CDN。
+构建只校验 `vendor/snapshot.json`，不会重新下载 CDN。
 
 提交 `vendor/` 里的 png、jpg、mp3、woff、woff2、ttf、ico 前要安装 Git LFS。脚本、样式、SVG 和 `snapshot.json` 仍在普通 Git 里。
 
