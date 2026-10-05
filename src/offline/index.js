@@ -4,11 +4,12 @@ import { createOfflineApi } from './api.js';
 import { installContract } from './contract.js';
 import { downloadFile } from './files.js';
 import { goHome } from './navigation.js';
-import { createSavePanel, mountBadge } from './panel.js';
+import { createSavePanel, mountLanding } from './panel-alpine.js';
 import { createSaveCommands } from './commands.js';
 import { createSdkBridge } from './sdk.js';
 import { createGameSession } from './session.js';
 import { createProfileStore } from './store.js';
+import { createDebugApi } from './debug.js';
 
 registerSW({
   immediate: true,
@@ -33,16 +34,20 @@ const panel = createSavePanel({
       history: profile.history
     };
   },
-  commands,
-  pause: () => session.pause(),
-  resume: wasPaused => session.resume(wasPaused)
+  commands
 });
 
 installContract({
   api: createOfflineApi({ profiles, session }),
   prepareSdk: createSdkBridge({ profiles, downloadFile, goHome }),
-  connect: stores => session.connect(stores, profiles)
+  connect: stores => {
+    session.connect(stores, profiles);
+    if (stores.debug) {
+      window.orbipom.debug = createDebugApi(stores.debug);
+    }
+  }
 });
+window.orbipom.toggleTools = () => panel.toggle();
 
 try {
   sessionStorage.setItem('u8_token', 'offline-local-only');
@@ -62,4 +67,4 @@ document.addEventListener('keydown', event => {
   event.stopPropagation();
   panel.toggle();
 }, true);
-mountBadge(() => panel.toggle());
+mountLanding();

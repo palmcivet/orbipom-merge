@@ -1,3 +1,12 @@
+function lqaScenePreview() {
+  try {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('lqa') === '1' && Boolean(params.get('scene'));
+  } catch {
+    return false;
+  }
+}
+
 export function createGameSession() {
   let stores = null;
 
@@ -5,6 +14,7 @@ export function createGameSession() {
     connect(nextStores, profiles) {
       stores = nextStores;
       stores.game.subscribe((current, previous) => {
+        if (lqaScenePreview()) return;
         const profile = profiles.current();
         let changed = false;
         if (current.mergeCount > previous.mergeCount) {

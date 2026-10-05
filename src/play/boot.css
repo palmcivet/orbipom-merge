@@ -1,0 +1,61 @@
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+  background: #83ccb7;
+  color: #173d30;
+  font: 16px/1.5 "HarmonyOS Sans SC", "PingFang SC", "Noto Sans SC", system-ui, sans-serif;
+}
+
+body {
+  display: grid;
+  min-height: 100svh;
+  place-items: center;
+}
+
+.boot {
+  width: min(22rem, calc(100% - 48px));
+  text-align: center;
+}
+
+.boot h1 {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.boot-stage {
+  min-height: 1.5em;
+  margin: 18px 0 0;
+  font-size: 0.95rem;
+}
+
+.boot-track {
+  height: 4px;
+  margin: 14px 0 0;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgb(23 61 48 / 16%);
+}
+
+.boot-track span {
+  display: block;
+  width: 0;
+  height: 100%;
+  border-radius: inherit;
+  background: #173d30;
+  transition: width 0.28s ease;
+}
+
+.boot-source {
+  margin: 10px 0 0;
+  color: rgb(23 61 48 / 72%);
+  font-size: 0.8rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .boot-track span {
+    transition: none;
+  }
+}
