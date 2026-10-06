@@ -1,0 +1,19 @@
+/* Phones stay in a portrait viewport. Draw the landscape page sideways. */
+@media (orientation: portrait) and (pointer: coarse) {
+  html:not(.device-landscape):has(body.stage-root) {
+    overflow: hidden;
+  }
+
+  html:not(.device-landscape) body.stage-root {
+    position: fixed;
+    top: 0;
+    left: var(--app-width, 100svw);
+    width: var(--app-height, 100svh);
+    height: var(--app-width, 100svw);
+    min-height: 0;
+    box-sizing: border-box;
+    transform: rotate(90deg);
+    transform-origin: top left;
+    overflow: hidden;
+  }
+}

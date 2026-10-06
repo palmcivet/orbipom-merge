@@ -10,6 +10,7 @@ import { createSdkBridge } from './sdk.js';
 import { createGameSession } from './session.js';
 import { createProfileStore } from './store.js';
 import { createDebugApi } from './debug.js';
+import { canvasLocal, stageBounds, stageLayoutHeight, stageMetrics } from './stage-coords.js';
 
 registerSW({
   immediate: true,
@@ -48,6 +49,10 @@ installContract({
   }
 });
 window.orbipom.toggleTools = () => panel.toggle();
+window.orbipom.stageMetrics = stageMetrics;
+window.orbipom.stageBounds = stageBounds;
+window.orbipom.stageLayoutHeight = stageLayoutHeight;
+window.orbipom.canvasLocal = canvasLocal;
 
 try {
   sessionStorage.setItem('u8_token', 'offline-local-only');

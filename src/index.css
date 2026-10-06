@@ -263,33 +263,19 @@ html:has(body.offline-home) {
   background: #17181c;
 }
 
-.offline-portrait-notice {
-  display: none;
-}
-
-@media (orientation: portrait) {
-  html:has(body.offline-home) {
-    background-color: #16264f;
+@media (orientation: portrait) and (pointer: coarse) {
+  html:not(.device-landscape) .offline-home .offline-landing {
+    height: 100%;
+    min-height: 100%;
   }
 
-  .offline-home .offline-landing > :not(.offline-portrait-notice) {
-    visibility: hidden;
+  html:not(.device-landscape) .offline-entry {
+    right: calc(clamp(16px, 3.4vh, 60px) + env(safe-area-inset-bottom));
+    bottom: calc(clamp(30px, 8.5vw, 84px) + env(safe-area-inset-left));
   }
 
-  .offline-home .offline-portrait-notice {
-    position: fixed;
-    z-index: 10002;
-    inset: 0;
-    display: grid;
-    place-items: center;
-    padding: 24px;
-    background: #16264f;
-    color: #f4f8ff;
-    font-size: 16px;
-    font-weight: 700;
-    letter-spacing: .08em;
-    text-align: center;
-    visibility: visible;
+  html:not(.device-landscape) .offline-info-dialog {
+    max-height: calc(var(--app-width, 100svw) - 36px);
   }
 }
 

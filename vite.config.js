@@ -47,7 +47,7 @@ export default defineConfig({
         short_name: '山团团',
         description: '本地离线版。图片和声音优先用官方地址，打不开时用本站备份。',
         lang: 'zh-CN',
-        display: 'standalone',
+        display: 'fullscreen',
         background_color: '#c2f0dc',
         theme_color: '#57c5a6',
         icons: []
