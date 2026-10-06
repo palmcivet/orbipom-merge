@@ -14,7 +14,7 @@ html:has(body.offline-home) {
   min-height: 100svh;
   margin: 0;
   overflow: hidden;
-  background: #eef0f7 url("../assets/bg.png") right center / cover no-repeat;
+  background: #eef0f7 url("../assets/bg.webp") right center / cover no-repeat;
   color: #2a2c33;
   font: 16px/1.6 "HarmonyOS Sans SC", "PingFang SC", "Noto Sans SC", system-ui, sans-serif;
 }

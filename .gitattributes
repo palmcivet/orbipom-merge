@@ -1,7 +1,9 @@
 vendor/**/*.png filter=lfs diff=lfs merge=lfs -text
 vendor/**/*.jpg filter=lfs diff=lfs merge=lfs -text
+vendor/**/*.webp filter=lfs diff=lfs merge=lfs -text
 vendor/**/*.mp3 filter=lfs diff=lfs merge=lfs -text
 vendor/**/*.woff filter=lfs diff=lfs merge=lfs -text
 vendor/**/*.woff2 filter=lfs diff=lfs merge=lfs -text
 vendor/**/*.ttf filter=lfs diff=lfs merge=lfs -text
 vendor/**/*.ico filter=lfs diff=lfs merge=lfs -text
+assets/**/*.webp filter=lfs diff=lfs merge=lfs -text

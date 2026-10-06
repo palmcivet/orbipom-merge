@@ -69,7 +69,7 @@ export default defineConfig({
           'play/index.html',
           'play/game.html',
           'offline/no-telemetry.js',
-          'assets/*.{js,css,ico,png}'
+          'assets/*.{js,css,ico,png,webp}'
         ],
         globIgnores: ['**/site/**', '**/vendor/**', '**/shared/**']
       },

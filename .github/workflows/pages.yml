@@ -38,6 +38,7 @@ jobs:
         run: pnpm build
         env:
           ORBIPOM_BASE_PATH: ${{ steps.pages.outputs.base_path }}
+          ORBIPOM_SITE_URL: ${{ steps.pages.outputs.base_url }}
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
